@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.LinkedList;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -22,25 +21,60 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.NumberFormatter;
 
+
 class Slot extends JLabel{
 
-	int count = -1 ;
-	Timer timer = new Timer(300, new ActionListener() {
+	int count1 = -1 ;
+	Timer timer1 = new Timer(250, new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-			switch(count) {
-				case 0 : setBackground(Color.ORANGE); break;
-				case 1 : setBackground(Color.WHITE); break;
-				case 2 : setBackground(Color.ORANGE); break;
-				case 3 : setBackground(Color.WHITE); break;
+			switch(count1) {
+				case -1: setVisible(true);
+				case 0 : setBackground(new Color(205,92,92)); break;
+				case 1 : setBackground(new Color(255,142,142)); break;
+				case 2 : setBackground(new Color(205,92,92)); break;
+				case 3 : setBackground(new Color(255,142,142)); break;
 			}
-			count++;
+			count1++;
 
-	        if (count == 4) {
-	        	count = 0;
-	        	timer.stop();
+	        if (count1 == 4) {
+	        	count1 = -1;
+	        	setVisible(false);
+	        	timer1.stop();
 	        }
 	    }    
 	});
+
+	int count2 = -1 ;
+	Timer timer2 = new Timer(250, new ActionListener() {
+	    public void actionPerformed(ActionEvent evt) {
+			switch(count2) {
+			case -1: setVisible(true);
+				case 0 : setBackground(new Color(100,149,237)); break;
+				case 1 : setBackground(new Color(150,199,255)); break;
+				case 2 : setBackground(new Color(100,149,237)); break;
+				case 3 : setBackground(new Color(150,199,255)); break;
+			}
+			count2++;
+
+	        if (count2 == 4) {
+	        	count2 = -1;
+	        	setVisible(false);
+	        	timer2.stop();
+	        }
+	    }    
+	});
+
+	
+	public void twinkle1(){
+		if(!timer1.isRunning()) {
+			timer1.start();
+		}
+	}
+
+	public void twinkle2(){
+		if(!timer2.isRunning())
+			timer2.start();
+	}
 	
 	public Slot() {
 		super();
@@ -72,16 +106,12 @@ class Slot extends JLabel{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void twinkle(){
-		if(!timer.isRunning())
-			timer.start();
-	}
-	
 	public void resetTwinkle() {
 		setBackground(Color.white);
 	}
 
 }
+
 
 class pos {
 	int x;
@@ -98,12 +128,12 @@ class pos {
 	
 	public boolean move(int dx,int dy) {
 		boolean flag = true;
+		if(x+dx<0) {x=0;return false;}
+		if(x+dx>2) {x=2;return false;}
+		if(y+dy<0) {y=0;return false;}
+		if(y+dy>3) {y=3;return false;}
 		x+=dx;
 		y+=dy;
-		if(x<0) {x=0;flag=false;}
-		if(x>2) {x=2;flag=false;}
-		if(y<0) {y=0;flag=false;}
-		if(y>3) {y=3;flag=false;}
 		index = 4*x+y;
 		
 		return flag;
@@ -175,17 +205,20 @@ class Skill {
 }
 
 class Character {
+	int p;
 	String name;
 	int healthPoint;
 	int manaPoint;
 	Skill[] skillSet = new Skill[6];
+	String classNumber;
 	
 	boolean shield = false;
 	
 	pos location = new pos(0,0);
 
-	public Character(String name,pos location) {
+	public Character(String name,pos location,int player) {
 		super();
+		this.p = player;
 		this.name = name;
 		this.location = location;
 	}
@@ -235,7 +268,7 @@ class Character {
 class subFrame extends JFrame{
 	
 	JPanel dataPanel = new JPanel();
-	JButton confirmBtn = new JButton("Î†àÏ∏†Í≥†!");
+	JButton confirmBtn = new JButton("∑π√˜∞Ì!");
 	
 	JPanel dataPanel1 = new JPanel();
 	JPanel dataPanel2 = new JPanel();
@@ -250,9 +283,9 @@ class subFrame extends JFrame{
 	JPanel healthPanel1 = new JPanel();
 	JPanel manaPanel1 = new JPanel();
 	
-	JLabel classLabel1 = new JLabel("Î∞ò");
-	JLabel healthLabel1 = new JLabel("Ï≤¥Î†•");
-	JLabel manaLabel1 = new JLabel("ÌñâÎèôÎ†•");
+	JLabel classLabel1 = new JLabel("π›");
+	JLabel healthLabel1 = new JLabel("√º∑¬");
+	JLabel manaLabel1 = new JLabel("«‡µø∑¬");
 
 	JFormattedTextField classTxt1 = new JFormattedTextField(new NumberFormatter());
 	JFormattedTextField healthTxt1 = new JFormattedTextField(new NumberFormatter());
@@ -262,9 +295,9 @@ class subFrame extends JFrame{
 	JPanel healthPanel2 = new JPanel();
 	JPanel manaPanel2 = new JPanel();
 	
-	JLabel classLabel2 = new JLabel("Î∞ò");
-	JLabel healthLabel2 = new JLabel("Ï≤¥Î†•");
-	JLabel manaLabel2 = new JLabel("ÌñâÎèôÎ†•");
+	JLabel classLabel2 = new JLabel("π›");
+	JLabel healthLabel2 = new JLabel("√º∑¬");
+	JLabel manaLabel2 = new JLabel("«‡µø∑¬");
 	
 	JFormattedTextField classTxt2 = new JFormattedTextField(new NumberFormatter());
 	JFormattedTextField healthTxt2 = new JFormattedTextField(new NumberFormatter());
@@ -292,12 +325,15 @@ class subFrame extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				setVisible(false);
-				MyFrame.nupJook1.setName(classTxt1.getText()+"Î∞ò ÎÑôÏ£ΩÏù¥");
+				MyFrame.nupJook1.setName(classTxt1.getText()+"π› ≥“¡◊¿Ã");
 				MyFrame.nupJook1.setHealthPoint(Integer.parseInt(healthTxt1.getText()));
 				MyFrame.nupJook1.setManaPoint(Integer.parseInt(manaTxt1.getText()));
-				MyFrame.nupJook2.setName(classTxt2.getText()+"Î∞ò ÎÑôÏ£ΩÏù¥");
+				MyFrame.nupJook2.setName(classTxt2.getText()+"π› ≥“¡◊¿Ã");
 				MyFrame.nupJook2.setHealthPoint(Integer.parseInt(healthTxt2.getText()));
 				MyFrame.nupJook2.setManaPoint(Integer.parseInt(manaTxt2.getText()));
+				
+				MyFrame.nupJook1.classNumber=classTxt1.getText();
+				MyFrame.nupJook2.classNumber=classTxt2.getText();
 				
 				for(int i=0;i<6;i++) {
 					String leftSkill = (String) skillComboBox1[i].getSelectedItem();
@@ -305,9 +341,9 @@ class subFrame extends JFrame{
 					
 					for(int j=0;j<MyFrame.skillList.length;j++) {
 						if(leftSkill == MyFrame.skillList[j].name) MyFrame.nupJook1.setSkillSet(MyFrame.skillList[j],i);
-						if(leftSkill == "ÌäÄÏñ¥Ïò§Î•¥Í∏∞") MyFrame.nupJook1.setSkillSet(MyFrame.skilllllll, i);
+						if(leftSkill == "∆¢æÓø¿∏£±‚") MyFrame.nupJook1.setSkillSet(MyFrame.skilllllll, i);
 						if(rightSkill == MyFrame.skillList[j].name) MyFrame.nupJook2.setSkillSet(MyFrame.skillList[j],i);
-						if(rightSkill == "ÌäÄÏñ¥Ïò§Î•¥Í∏∞") MyFrame.nupJook2.setSkillSet(MyFrame.skilllllll, i);
+						if(rightSkill == "∆¢æÓø¿∏£±‚") MyFrame.nupJook2.setSkillSet(MyFrame.skilllllll, i);
 					}
 				}
 				
@@ -318,8 +354,8 @@ class subFrame extends JFrame{
 		
 		/////////////////////////////////////////////////////////////////////////////
 		//dataPanel
-		dataPanel1.setBorder(new TitledBorder(new EtchedBorder(),"ÏôºÏ™Ω ÎÑôÏ£ΩÏù¥"));
-		dataPanel2.setBorder(new TitledBorder(new EtchedBorder(),"Ïò§Î•∏Ï™Ω ÎÑôÏ£ΩÏù¥"));
+		dataPanel1.setBorder(new TitledBorder(new EtchedBorder(),"øﬁ¬  ≥“¡◊¿Ã"));
+		dataPanel2.setBorder(new TitledBorder(new EtchedBorder(),"ø¿∏•¬  ≥“¡◊¿Ã"));
 		
 		dataPanel1.setLayout(new GridLayout(2,1,5,5));
 		dataPanel2.setLayout(new GridLayout(2,1,5,5));
@@ -371,15 +407,15 @@ class subFrame extends JFrame{
 		skillPanel1.setLayout(new GridLayout(3,2,20,10));
 		skillPanel2.setLayout(new GridLayout(3,2,20,10));
 		
-		skillPanel1.setBorder(new TitledBorder(new EtchedBorder(),"Ïä§ÌÇ¨ÏÖã"));
-		skillPanel2.setBorder(new TitledBorder(new EtchedBorder(),"Ïä§ÌÇ¨ÏÖã"));
+		skillPanel1.setBorder(new TitledBorder(new EtchedBorder(),"Ω∫≈≥º¬"));
+		skillPanel2.setBorder(new TitledBorder(new EtchedBorder(),"Ω∫≈≥º¬"));
 		
 		for(int i=0;i<6;i++) {
 			skillComboBox1[i] = new JComboBox<String>();
 			skillComboBox2[i] = new JComboBox<String>();
 			
-			skillComboBox1[i].addItem("ÌäÄÏñ¥Ïò§Î•¥Í∏∞");
-			skillComboBox2[i].addItem("ÌäÄÏñ¥Ïò§Î•¥Í∏∞");
+			skillComboBox1[i].addItem("∆¢æÓø¿∏£±‚");
+			skillComboBox2[i].addItem("∆¢æÓø¿∏£±‚");
 			
 			for(int j=0;j<MyFrame.skillList.length;j++) {
 				skillComboBox1[i].addItem(MyFrame.skillList[j].name);
@@ -404,14 +440,32 @@ class subFrame extends JFrame{
 
 class MyFrame extends JFrame implements KeyListener,MouseListener{
 	
-	static Character nupJook1 = new Character("ÎÑôÏ£ΩÏù¥A",new pos(1,0));
-	static Character nupJook2 = new Character("ÎÑôÏ£ΩÏù¥B",new pos(1,3));
+
+	JPanel background;
+	
+	static Character nupJook1 = new Character("≥“¡◊¿ÃA",new pos(1,0),1);
+	static Character nupJook2 = new Character("≥“¡◊¿ÃB",new pos(1,3),2);
 	
 	JPanel mainPanel = new JPanel();
 	JPanel textPanel = new JPanel();
+
+	JPanel playerClassPanel1 = new JPanel();
+	JPanel playerClassPanel2 = new JPanel();
+	
+	JPanel classPanel1 = new JPanel();
+	JPanel classPanel2 = new JPanel();
 	
 	JPanel statusPanel=new JPanel();
+	
 	JPanel boardPanel=new JPanel();
+	JPanel boardPanel2=new JPanel();
+	
+	JPanel playerPanel1 = new JPanel();
+	JPanel playerPanel2 = new JPanel();
+	
+	
+	JPanel boxPanel1 = new JPanel();
+	JPanel boxPanel2 = new JPanel();
 	
 	JPanel statusPanel1 = new JPanel();
 	JPanel statusPanel2 = new JPanel();
@@ -426,10 +480,17 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	ImageIcon scaledDiamond = new ImageIcon(diamond.getImage().getScaledInstance(30,30,Image.SCALE_SMOOTH));
 	ImageIcon scaledShield = new ImageIcon(shield.getImage().getScaledInstance(30,30,Image.SCALE_SMOOTH));
 	
-	JLabel health1 = new JLabel("Ï≤¥Î†•",JLabel.CENTER);
-	JLabel health2 = new JLabel("Ï≤¥Î†•",JLabel.CENTER);
-	JLabel mana1 = new JLabel("ÌñâÎèôÎ†•",JLabel.CENTER);
-	JLabel mana2 = new JLabel("ÌñâÎèôÎ†•",JLabel.CENTER);
+	JLabel health1 = new JLabel("√º∑¬",JLabel.CENTER);
+	JLabel health2 = new JLabel("√º∑¬",JLabel.CENTER);
+	JLabel mana1 = new JLabel("«‡µø∑¬",JLabel.CENTER);
+	JLabel mana2 = new JLabel("«‡µø∑¬",JLabel.CENTER);
+
+	JLabel class1 = new JLabel(nupJook1.classNumber, JLabel.CENTER);
+	JLabel class2 = new JLabel(nupJook2.classNumber, JLabel.CENTER);
+	
+
+	JLabel playerClass1 = new JLabel(nupJook1.classNumber, JLabel.CENTER);
+	JLabel playerClass2 = new JLabel(nupJook2.classNumber, JLabel.CENTER);
 	
 	JLabel heart1 = new JLabel();
 	JLabel heart2 = new JLabel();
@@ -438,11 +499,16 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	
 	JLabel round = new JLabel("Round \n 1",JLabel.CENTER);
 	
-	ImageIcon nupjookImage = new ImageIcon(getClass().getResource("NudeNupjook.png"));
+	ImageIcon nupjookImage = new ImageIcon(getClass().getResource("nudenupjook2.png"));
 	ImageIcon scaledNupjookImage = new ImageIcon(nupjookImage.getImage().getScaledInstance(135,135,Image.SCALE_SMOOTH));
+
+	ImageIcon scaledNupjookImage2 = new ImageIcon(nupjookImage.getImage().getScaledInstance(100,100,Image.SCALE_SMOOTH));
 	
 	JLabel imageLabel1 = new JLabel(scaledNupjookImage);
 	JLabel imageLabel2 = new JLabel(scaledNupjookImage);
+
+	JLabel playLabel1 = new JLabel(scaledNupjookImage2,JLabel.CENTER);
+	JLabel playLabel2 = new JLabel(scaledNupjookImage2,JLabel.CENTER);
 	
 	JLabel shieldLabel1 = new JLabel(scaledShield);
 	JLabel shieldLabel2 = new JLabel(scaledShield);
@@ -451,42 +517,41 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	
 	JTextArea txt = new JTextArea();
 	
-	JButton okayBtn = new JButton("Î†àÏ∏†Í≥†!");
+	JButton okayBtn = new JButton("∑π√˜∞Ì!");
 	
 	static Slot[] slot = new Slot[12];
+	static Slot[] slot2 = new Slot[12];
 	
 	static Skill skillz = new Skill("404 Not Found",1,1,new pos[]{new pos(-1,0),new pos(1,0),new pos(0,-1),new pos(0,1)},'z');
-	static Skill skillx = new Skill("Ïä§ÌÜ†ÌÅ¨Ïä§ Îπî",1,1,new pos[]{new pos(0,-3),new pos(0,-2),new pos(0,-1),new pos(0,0),new pos(0,1),new pos(0,2),new pos(0,3)},'x');
-	static Skill skillc = new Skill("ÏÑ∏ÎØ∏ÏΩúÎ°† ÏÇ≠Ï†ú",3,1,new pos[]{new pos(-1,0)},'c');
-	static Skill skillv = new Skill("ÌïµÎ∂ÑÏó¥",2,7,new pos[] {new pos(-2,-3),new pos(-2,-2),new pos(-2,-1),new pos(-2,0),new pos(-2,1),new pos(-2,2),new pos(-2,3),new pos(-1,3),new pos(-1,2),new pos(-1,1),new pos(-1,0),new pos(-1,-1),new pos(-1,-2),new pos(-1,-3),new pos(0,-3),new pos(0,-2),new pos(0,-1),new pos(0,0),new pos(0,1),new pos(0,2),new pos(0,3),new pos(1,-3),new pos(1,-2),new pos(1,-1),new pos(1,0),new pos(1,1),new pos(1,2),new pos(1,3),new pos(2,-3),new pos(2,-2),new pos(2,-1),new pos(2,0),new pos(2,1),new pos(2,2),new pos(2,3)},'v');
-	static Skill skillb = new Skill("ÏïîÏÑ∏Ìè¨ Î∂ÑÏó¥",2,2,new pos[] {new pos(0,-1),new pos(-1,-1),new pos(-1,1),new pos(1,1),new pos(0,1),new pos(1,-1)},'b');
-	static Skill skilln = new Skill("ÏÇºÍ∞ÅÏûê ÎçòÏßÄÍ∏∞",3,2,new pos[] {new pos(-1,1),new pos(-1,-1),new pos(1,1),new pos(1,-1)},'n');
-	static Skill skillm = new Skill("ÏÇ∞ÌôîÎ∞òÏùë",2,1,new pos[] {new pos(2,0),new pos(1,0),new pos(0,0),new pos(-1,0),new pos(-2,0)},'m');
-	static Skill skillj = new Skill("ÏôÑÏ†ÑÏó∞ÏÜå",2,2,new pos[] {new pos(1,0),new pos(-1,0),new pos(0,1),new pos(0,-1)},'j');
-	static Skill skillk = new Skill("Ïú†Ï†ÑÏûê ÎπÑÎ∂ÑÎ¶¨",1,2,new pos[] {new pos(-1,0),new pos(-1,-1),new pos(-1,1),new pos(1,1),new pos(1,0),new pos(1,-1),new pos(0,1),new pos(0,-1)},'k');
-	static Skill skilll = new Skill("Ïù¥Ï§ëÏä¨Î¶ø",1,1,new pos[]{new pos(0,-1),new pos(-1,-1),new pos(-1,1),new pos(1,1),new pos(0,1),new pos(1,-1)},'l');
-	static Skill skilllllll = new Skill("ÌäÄÏñ¥Ïò§Î•¥Í∏∞",0,0,new pos[] {},'?');
-	static Skill skillq = new Skill("Î¨¥Í∏∞Îä•Î†•:ÎÑôÏ£ΩÏπº",3,3,new pos[] {new pos(0,1),new pos(0,-1)},'q');
-	static Skill skillw = new Skill("Î¨¥Í∏∞Îä•Î†•:ÎÑôÏ£ΩÌôú",4,3,new pos[] {new pos(0,1),new pos(0,-1)},'w');
-	static Skill skille = new Skill("Î¨¥Í∏∞Îä•Î†•:Îî±Ï¥ùÎÇòÎ¨¥ ÏßÄÌå°Ïù¥",4,3,new pos[] {new pos(1,0),new pos(-1,0)},'e');
-	static Skill skilla = new Skill("Î¨¥Í∏∞Îä•Î†•:Ï≤†Ìá¥",5,4,new pos[] {new pos(0,1),new pos(0,-1)},'a');
-	static Skill skills = new Skill("Î¨¥Í∏∞Îä•Î†•:ÌõàÎØºÏ†ïÏùå Ìï¥Î°ÄÎ≥∏",5,5,new pos[] {new pos(0,1),new pos(0,-1),new pos(1,0),new pos(-1,0)},'s');
-	static Skill skilld = new Skill("Î¨¥Í∏∞Îä•Î†•:ÏÇ¨ÎûëÏùò ÏöîÏà†Î¥â",3,5,new pos[] {new pos(0,1),new pos(0,-1),new pos(1,0),new pos(-1,0),new pos(1,1),new pos(1,-1),new pos(-1,-1),new pos(-1,1)},'d');
-	static Skill skillo = new Skill("Ïã§Î¶¨ÏΩò ÎèÑÌïë",0,-3,new pos[] {},'o');
-	//static Skill skillg = new Skill("Ïù¥Îã®Ïù¥Îèô1",0,0,new pos[] {},'g');
-	//static Skill skillh = new Skill("Ïù¥Îã®Ïù¥Îèô2",0,0,new pos[] {},'h');
+	static Skill skillx = new Skill("Ω∫≈‰≈©Ω∫ ∫ˆ",1,1,new pos[]{new pos(0,-3),new pos(0,-2),new pos(0,-1),new pos(0,0),new pos(0,1),new pos(0,2),new pos(0,3)},'x');
+	static Skill skillc = new Skill("ººπÃƒ›∑– ªË¡¶",3,1,new pos[]{new pos(-1,0)},'c');
+	static Skill skillv = new Skill("«Ÿ∫–ø≠",2,7,new pos[] {new pos(-2,-3),new pos(-2,-2),new pos(-2,-1),new pos(-2,0),new pos(-2,1),new pos(-2,2),new pos(-2,3),new pos(-1,3),new pos(-1,2),new pos(-1,1),new pos(-1,0),new pos(-1,-1),new pos(-1,-2),new pos(-1,-3),new pos(0,-3),new pos(0,-2),new pos(0,-1),new pos(0,0),new pos(0,1),new pos(0,2),new pos(0,3),new pos(1,-3),new pos(1,-2),new pos(1,-1),new pos(1,0),new pos(1,1),new pos(1,2),new pos(1,3),new pos(2,-3),new pos(2,-2),new pos(2,-1),new pos(2,0),new pos(2,1),new pos(2,2),new pos(2,3)},'v');
+	static Skill skillb = new Skill("æœºº∆˜ ∫–ø≠",2,2,new pos[] {new pos(0,-1),new pos(-1,-1),new pos(-1,1),new pos(1,1),new pos(0,1),new pos(1,-1)},'b');
+	static Skill skilln = new Skill("ªÔ∞¢¿⁄ ¥¯¡ˆ±‚",3,2,new pos[] {new pos(-1,1),new pos(-1,-1),new pos(1,1),new pos(1,-1)},'n');
+	static Skill skillm = new Skill("ªÍ»≠π›¿¿",2,1,new pos[] {new pos(2,0),new pos(1,0),new pos(0,0),new pos(-1,0),new pos(-2,0)},'m');
+	static Skill skillj = new Skill("øœ¿¸ø¨º“",2,2,new pos[] {new pos(1,0),new pos(-1,0),new pos(0,1),new pos(0,-1)},'j');
+	static Skill skillk = new Skill("¿Ø¿¸¿⁄ ∫Ò∫–∏Æ",1,2,new pos[] {new pos(-1,0),new pos(-1,-1),new pos(-1,1),new pos(1,1),new pos(1,0),new pos(1,-1),new pos(0,1),new pos(0,-1)},'k');
+	static Skill skilll = new Skill("¿Ã¡ﬂΩΩ∏¥",1,1,new pos[]{new pos(0,-1),new pos(-1,-1),new pos(-1,1),new pos(1,1),new pos(0,1),new pos(1,-1)},'l');
+	static Skill skilllllll = new Skill("∆¢æÓø¿∏£±‚",0,0,new pos[] {},'?');
+	static Skill skillq = new Skill("π´±‚¥…∑¬:≥“¡◊ƒÆ",3,3,new pos[] {new pos(0,1),new pos(0,-1)},'q');
+	static Skill skillw = new Skill("π´±‚¥…∑¬:≥“¡◊»∞",4,3,new pos[] {new pos(0,1),new pos(0,-1)},'w');
+	static Skill skille = new Skill("π´±‚¥…∑¬:µ¸√—≥™π´ ¡ˆ∆Œ¿Ã",4,3,new pos[] {new pos(1,0),new pos(-1,0)},'e');
+	static Skill skilla = new Skill("π´±‚¥…∑¬:√∂≈",5,4,new pos[] {new pos(0,1),new pos(0,-1)},'a');
+	static Skill skills = new Skill("π´±‚¥…∑¬:»∆πŒ¡§¿Ω «ÿ∑ ∫ª",5,5,new pos[] {new pos(0,1),new pos(0,-1),new pos(1,0),new pos(-1,0)},'s');
+	static Skill skilld = new Skill("π´±‚¥…∑¬:ªÁ∂˚¿« ø‰º˙∫¿",3,5,new pos[] {new pos(0,1),new pos(0,-1),new pos(1,0),new pos(-1,0),new pos(1,1),new pos(1,-1),new pos(-1,-1),new pos(-1,1)},'d');
+	static Skill skillo = new Skill("Ω«∏Æƒ‹ µµ«Œ",0,-3,new pos[] {},'o');
+	//static Skill skillg = new Skill("¿Ã¥‹¿Ãµø1",0,0,new pos[] {},'g');
+	//static Skill skillh = new Skill("¿Ã¥‹¿Ãµø2",0,0,new pos[] {},'h');
 	
 	static Skill[] skillList = {skillz,skillx,skillc,skillv,skillb,skilln,skillm,skillj,skillk,skilll,skillq,skillw,skille,skilla,skills,skilld};
 	
 	static String[] action = new String[6];
 	
-	JButton actionBtn = new JButton("ÌñâÎèô ÏûÖÎ†•");
+	JButton actionBtn = new JButton("«‡µø ¿‘∑¬");
 	
 	Timer timer;
 	int count;
-	
-	Timer typer;
-	int typingCount;
+	int typingCount = 0;
 	
 	MyFrame(){
 		super("Let's Go! NUPJOOK!");
@@ -501,10 +566,10 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		
 		this.setIconImage(mainIcon.getImage());
 		
-		playSound("backgroundMusic.wav");
+		playLoopSound("backgroundMusic.wav");
 		
 		//background
-		JPanel background = new JPanel() {
+		background = new JPanel() {
 			public void paintComponent(Graphics g) {
 				ImageIcon bgImage = new ImageIcon(getClass().getResource("backgroundImage_1.png"));
 				ImageIcon scaledbgImage = new ImageIcon(bgImage.getImage().getScaledInstance(900,675,Image.SCALE_SMOOTH));
@@ -514,7 +579,56 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			}
 		};
 		
+
+		
+		//playerPanel
+		playerPanel1.setLayout(new BorderLayout());
+		playerPanel1.setBackground(new Color(0,0,0,0));
+		playerPanel1.add(playLabel1);
+		playerPanel2.setLayout(new BorderLayout());
+		playerPanel2.setBackground(new Color(0,0,0,0));
+		playerPanel2.add(playLabel2);
+		
+		
+		//boxPanel
+		
+		boxPanel1.setLayout(new BorderLayout());
+		boxPanel1.setBackground(new Color(250,238,214));
+		boxPanel1.setBorder(new LineBorder(new Color(150,138,114),5,false));	
+
+		boxPanel2.setLayout(new BorderLayout());
+		boxPanel2.setBackground(new Color(250,238,214));
+		boxPanel2.setBorder(new LineBorder(new Color(150,138,114),5,false));	
+		
+		//classPanel
+
+		classPanel1.setLayout(new BorderLayout());
+		classPanel1.setBackground(new Color(0,0,0,0));
+		classPanel1.add(class1);
+		class1.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.BOLD,30));
+		class1.setOpaque(false);
+		
+
+		classPanel2.setLayout(new BorderLayout());
+		classPanel2.setBackground(new Color(0,0,0,0));
+		classPanel2.add(class2);
+		class2.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.BOLD,30));
+		class2.setOpaque(false);
 		//statusPanel
+		
+
+		//playerClassPanel
+		playerClassPanel1.setLayout(new BorderLayout());
+		playerClassPanel1.setBackground(new Color(0,0,0,0));
+		playerClassPanel1.add(playerClass1);
+		playerClass1.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.BOLD,23));
+		playerClass1.setOpaque(false);
+		
+		playerClassPanel2.setLayout(new BorderLayout());
+		playerClassPanel2.setBackground(new Color(0,0,0,0));
+		playerClassPanel2.add(playerClass2);
+		playerClass2.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.BOLD,23));
+		playerClass2.setOpaque(false);
 		
 		statusPanel.setBounds(4,4,893,135);
 		statusPanel.setBackground(new Color(0,0,0,0));
@@ -524,18 +638,18 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		statusPanel1.add(health1,BorderLayout.NORTH);
 		statusPanel1.add(mana1,BorderLayout.SOUTH);
 		
-		health1.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
-		health1.setOpaque(true);
+		health1.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
+		health1.setOpaque(false);
 		health1.setBackground(new Color(201,201,201));
-		mana1.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
-		mana1.setOpaque(true);
+		mana1.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
+		mana1.setOpaque(false);
 		mana1.setBackground(new Color(201,201,201));
 		
 		heart1.setText("x"+nupJook1.healthPoint);
-		heart1.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
+		heart1.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
 		heart1.setIcon(scaledHeart);
 		diamond1.setText("x"+nupJook1.manaPoint);
-		diamond1.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
+		diamond1.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
 		diamond1.setIcon(scaledDiamond);
 		
 		statusPanel2.setLayout(new BorderLayout());
@@ -543,36 +657,39 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		statusPanel2.add(health2,BorderLayout.NORTH);
 		statusPanel2.add(mana2,BorderLayout.SOUTH);
 		
-		health2.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
-		health2.setOpaque(true);
+		health2.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
+		health2.setOpaque(false);
 		health2.setBackground(new Color(201,201,201));
-		mana2.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
-		mana2.setOpaque(true);
+		mana2.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
+		mana2.setOpaque(false);
 		mana2.setBackground(new Color(201,201,201));
 		
 		heart2.setText("x"+nupJook2.healthPoint);
-		heart2.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
-		heart2.setHorizontalAlignment(SwingConstants.RIGHT);
+		heart2.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
+//		heart2.setHorizontalAlignment(SwingConstants.RIGHT);
 		heart2.setIcon(scaledHeart);
 		diamond2.setText("x"+nupJook2.manaPoint);
-		diamond2.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
-		diamond2.setHorizontalAlignment(SwingConstants.RIGHT);
+		diamond2.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
+//		diamond2.setHorizontalAlignment(SwingConstants.RIGHT);
 		diamond2.setIcon(scaledDiamond);
 		
+		boxPanel1.setBounds(155,10,193,130);
+		boxPanel2.setBounds(542,10,193,130);
+		classPanel1.setBounds(4,4,135,135);
 		imageLabel1.setBounds(4,4,135,135);
+		classPanel2.setBounds(750,4,135,135);
 		imageLabel2.setBounds(750,4,135,135);
-		statusPanel1.setBounds(145,4,90,90);
-		statusPanel2.setBounds(656,4,90,90);
-		
+		statusPanel1.setBounds(165,20,90,107);
+		statusPanel2.setBounds(552,20,90,107);
 		shieldLabel1.setBounds(4,150,38,38);
 		shieldLabel2.setBounds(848,150,38,38);
 		
-		heart1.setBounds(238,4,90,45);
-		diamond1.setBounds(238,68,90,45);
-		heart2.setBounds(557,4,90,45);
-		diamond2.setBounds(557,68,90,45);
+		heart1.setBounds(258,20,90,45);
+		diamond1.setBounds(258,85,90,45);
+		heart2.setBounds(645,20,90,45);
+		diamond2.setBounds(645,85,90,45);
 
-		round.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,20));
+		round.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,20));
 		round.setBounds(550,5,100,120);
 		
 		//boardPanel
@@ -580,20 +697,33 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		boardPanel.setBounds(4, 270,862, 270);
 		boardPanel.setOpaque(false);	
 		boardPanel.addMouseListener(this);
+
+		boardPanel2.setLayout(new GridLayout(3,4,5,5));
+		boardPanel2.setBounds(4, 270,862, 270);
+		boardPanel2.setOpaque(false);	
+		boardPanel2.addMouseListener(this);
 		
 		for(int i=0;i<12;i++) {
-			slot[i] = new Slot(""+(i+1),JLabel.CENTER);
+			slot[i] = new Slot();
 			slot[i].setOpaque(true);
 			slot[i].setBorder(new LineBorder(Color.BLACK,5,false));
-			slot[i].setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
+			slot[i].setVisible(false);
 			boardPanel.add(slot[i]);
+		}
+		
+		for(int i=0;i<12;i++) {
+			slot2[i] = new Slot();
+			slot2[i].setOpaque(true);
+			slot2[i].setBackground(new Color(245,222,178));
+			slot2[i].setBorder(new LineBorder(Color.BLACK,5,false));
+			boardPanel2.add(slot2[i]);
 		}
 
 		recolor();
 		
 		//textField
 		txt.setBounds(4,548,862,80);
-		txt.setFont(new Font("ÎÇòÎàîÏä§ÌÄòÏñ¥ÎùºÏö¥Îìú",Font.PLAIN,30));
+		txt.setFont(new Font("≥™¥ÆΩ∫ƒ˘æÓ∂ÛøÓµÂ",Font.PLAIN,30));
 		txt.setFocusable(false);
 		
 		actionBtn.setBounds(775,630,90,40);
@@ -626,7 +756,12 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		
 		//arrangement
 		background.setLayout(null);
+
+		
+		
+		background.add(classPanel1);
 		background.add(imageLabel1);
+		background.add(classPanel2);
 		background.add(imageLabel2);
 		background.add(statusPanel1);
 		background.add(statusPanel2);
@@ -637,20 +772,24 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		background.add(diamond2);
 		background.add(shieldLabel1);
 		background.add(shieldLabel2);
+
+		background.add(boxPanel1);
+		background.add(boxPanel2);
 		
 		checkShield();
 		
 		//background.add(round);
 		
 		background.add(statusPanel);
-		background.add(boardPanel);
+		background.add(boardPanel,-1);
+		background.add(boardPanel2,-1);
 		background.add(txt);
 		background.add(actionBtn);
 		background.add(okayBtn);
 		
 		setContentPane(background);
 		
-		txt.setText("Îã§Ïùå ÌñâÎèôÏùÑ ÏûÖÎ†•ÌïòÏÑ∏Ïöî!"+"\n"+"->");
+		txt.setText("¥Ÿ¿Ω «‡µø¿ª ¿‘∑¬«œººø‰!"+"\n"+">");
 	}
 	
 	public void playSound(String str) {
@@ -659,6 +798,20 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	        Clip clip = AudioSystem.getClip();
 	        clip.open(audioInputStream);
 	        clip.start();
+	        // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY); 
+	        // If you want to stop the sound, then use clip.stop();
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	    }
+	}
+	
+	public void playLoopSound(String str) {
+	    try {
+	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(this.getClass().getResource(str));
+	        Clip clip = AudioSystem.getClip();
+	        clip.open(audioInputStream);
+	        clip.start();
+	        clip.loop(Clip.LOOP_CONTINUOUSLY);	        
 	        // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY); 
 	        // If you want to stop the sound, then use clip.stop();
 	    } catch (Exception ex) {
@@ -676,14 +829,42 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	
 	public void recolor() {
 		for(int i=0;i<12;i++) {
-			slot[i].setBackground(Color.WHITE);
-			slot[i].setBorder(new LineBorder(Color.BLACK,5,false));
+			slot2[i].setBackground(new Color(245,222,178));
+			slot2[i].setBorder(new LineBorder(Color.BLACK,5,false));
 		}
 		
+		int a1 = 20+216*(nupJook1.location.index%4);
+		int a2 = 100+216*(nupJook2.location.index%4);
+		int b1 = 250+91*(nupJook1.location.index/4);
+		int b2 = 250+91*(nupJook2.location.index/4);
+		int c = 100;
+		int d = 100;
+		/*slot[nupJook1.location.index].setBackground(new Color(255,200,200));
 		slot[nupJook1.location.index].setBorder(new LineBorder(Color.RED,5,false));
+		slot[nupJook2.location.index].setBackground(new Color(200,200,255));
 		slot[nupJook2.location.index].setBorder(new LineBorder(Color.BLUE,5,false));
-		if(nupJook1.location.index == nupJook2.location.index ) 
-			slot[nupJook1.location.index].setBorder(new LineBorder(new Color(255,122,165),5,false));
+		if(nupJook1.location.index == nupJook2.location.index ) {
+			slot[nupJook1.location.index].setBorder(new LineBorder(new Color(75,0,130),5,false));
+			slot[nupJook1.location.index].setBackground(new Color(216,191,216));
+		}*/
+		
+
+		slot2[nupJook1.location.index].setBackground(new Color(255,200,200));
+		slot2[nupJook1.location.index].setBorder(new LineBorder(Color.RED,5,false));
+		slot2[nupJook2.location.index].setBackground(new Color(200,200,255));
+		slot2[nupJook2.location.index].setBorder(new LineBorder(Color.BLUE,5,false));
+		if(nupJook1.location.index == nupJook2.location.index ) {
+			slot2[nupJook1.location.index].setBorder(new LineBorder(new Color(75,0,130),5,false));
+			slot2[nupJook1.location.index].setBackground(new Color(216,191,216));
+		}
+		playerPanel1.setBounds(a1,b1,c,d);
+		playerPanel2.setBounds(a2,b2,c,d);
+		playerClassPanel1.setBounds(a1,b1,c,d);
+		playerClassPanel2.setBounds(a2,b2,c,d);
+		background.add(playerPanel1,0);
+		background.add(playerPanel2,0);
+		background.add(playerClassPanel1,0);
+		background.add(playerClassPanel2,0);
 	}
 	
 	public void checkData() {
@@ -731,60 +912,59 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		
 		return output;
 	}
-	
-	public void typing(String str) {
-		ActionListener action = new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-				txt.setText(str.substring(0,typingCount++));
-				
-				if(typingCount == str.length()) { 
-					typingCount = 0;
-					typer.stop();
-				}
-				
+	String str = "";
+	String line = "";
+	Timer typer1 = new Timer(50, new ActionListener() {
+	    public void actionPerformed(ActionEvent evt) {
+			// TODO Auto-generated method stub
+			
+			txt.setText(str.substring(0,++typingCount));
+			
+			if(typingCount == str.length()) { 
+				typingCount = 0;
+				typer1.stop();
 			}
 			
+	    }    
+	});
+
+	Timer typer2 = new Timer(500, new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+		
+			txt.setText(line+str.substring(0,++typingCount));
+				
+			if(typingCount == str.length()) {
+				typingCount = 0;
+				typer2.stop();
+			}
 		};
-		
-		typer = new Timer(50,action);
-		typer.start();
-		
+	});
+	
+	public void typing(String stri) {
+		str = stri;
+		if(!typer1.isRunning())
+			typer1.start();
+		txt.setText(stri);
 	}
 	
-	public void typing(String line,String str) {
-		ActionListener action = new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			
-				txt.setText(line+str.substring(0,typingCount++));
-				
-				if(typingCount == str.length()) {
-					typingCount = 0;
-					typer.stop();
-				}
-			}
-			
-		};
-		
-		typer = new Timer(50,action);
-		typer.start();
+	public void typing(String lin,String stri) {
+		str = stri;
+		line = lin;
+		if(!typer2.isRunning())
+			typer2.start();
+		txt.setText(line+str);
 	}
 	public int skillNametoType(String name) {
 		
 		switch(name){
-			case "ÏôºÏ™ΩÏúºÎ°ú!":
-			case "Ïò§Î•∏Ï™ΩÏúºÎ°ú!":
-			case "ÏïÑÎûòÎ°ú!":
-			case "ÏúÑÎ°ú!": return 1;
+			case "øﬁ¬ ¿∏∑Œ!":
+			case "ø¿∏•¬ ¿∏∑Œ!":
+			case "æ∆∑°∑Œ!":
+			case "¿ß∑Œ!": return 1;
 				
-			case "ÎèÑÌïë!":
-			case "Î∞©Ïñ¥!": return 0;
+			case "µµ«Œ!":
+			case "πÊæÓ!": return 0;
 		}
 		
 		return 2;
@@ -839,17 +1019,22 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 					nupJook2.shield = false;
 					checkShield();
 				}
-				playSound("Beep.wav");
 				
+				if(count<6) {	
+					
+				playSound("Beep.wav");
+				System.out.println("beep");
 				System.out.println(count);
-				System.out.println(count+": "+who[count].name+"Ïùò "+act[count]+"!");
+				System.out.println(count+": "+who[count].name+"¿« "+act[count]+"!");
 				useSth(who[count],act[count]);
+				
+				}
 				
 				count++;
 				
-				if (count == 6) {
+				if (count == 8) {
 					count = 0;
-					txt.setText("Îã§Ïùå ÌñâÎèôÏùÑ ÏûÖÎ†•ÌïòÏÑ∏Ïöî!"+"\n"+"->");
+					txt.setText("¥Ÿ¿Ω «‡µø¿ª ¿‘∑¬«œººø‰!"+"\n"+">");
 					timer.stop();
 				}
 			}
@@ -862,34 +1047,35 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	}
 	
 	public void useDopOrShield(Character nupjook,String str) {
-		if(str == "ÎèÑÌïë!") useSkill(nupjook,skillo);
+		if(str == "µµ«Œ!") useSkill(nupjook,skillo);
 		else {
 			nupjook.shield=true;
-			typing(nupjook.name+"Îäî Î∞©Ïñ¥ ÌÉúÏÑ∏Ïóê Îì§Ïñ¥Í∞îÎã§!");
+			typing(nupjook.name+"¥¬ πÊæÓ ≈¬ººø° µÈæÓ∞¨¥Ÿ!");
 			checkShield();
 		}
 	}
 	
 	public void useMove(Character nupjook, String str) {
 		switch(str) {
-			case "ÏúÑÎ°ú!": nupjook.location.move(-1,0); typing(nupjook.name+"Îäî ÏúÑÎ°ú Ìïú Ïπ∏ Ïù¥ÎèôÌñàÎã§!");break;
-			case "ÏïÑÎûòÎ°ú!": nupjook.location.move(1,0); typing(nupjook.name+"Îäî ÏïÑÎûòÎ°ú Ìïú Ïπ∏ Ïù¥ÎèôÌñàÎã§!"); break;
-			case "ÏôºÏ™ΩÏúºÎ°ú!": nupjook.location.move(0, -1); typing(nupjook.name+"Îäî ÏôºÏ™ΩÏúºÎ°ú Ìïú Ïπ∏ Ïù¥ÎèôÌñàÎã§!"); break;
-			case "Ïò§Î•∏Ï™ΩÏúºÎ°ú!": nupjook.location.move(0, 1); typing(nupjook.name+"Îäî Ïò§Î•∏Ï™ΩÏúºÎ°ú Ìïú Ïπ∏ Ïù¥ÎèôÌñàÎã§!"); break;
+			case "¿ß∑Œ!": if(nupjook.location.x > 0) {nupjook.location.move(-1,0); typing(nupjook.name+"¥¬ ¿ß∑Œ «— ƒ≠ ¿Ãµø«ﬂ¥Ÿ!");}break;
+			case "æ∆∑°∑Œ!": if(nupjook.location.x < 2) {nupjook.location.move(1,0); typing(nupjook.name+"¥¬ æ∆∑°∑Œ «— ƒ≠ ¿Ãµø«ﬂ¥Ÿ!");} break;
+			case "øﬁ¬ ¿∏∑Œ!": if(nupjook.location.y > 0) {nupjook.location.move(0, -1); typing(nupjook.name+"¥¬ øﬁ¬ ¿∏∑Œ «— ƒ≠ ¿Ãµø«ﬂ¥Ÿ!");} break;
+			case "ø¿∏•¬ ¿∏∑Œ!": if(nupjook.location.y < 3) {nupjook.location.move(0, 1); typing(nupjook.name+"¥¬ ø¿∏•¬ ¿∏∑Œ «— ƒ≠ ¿Ãµø«ﬂ¥Ÿ!");} break;
 		}
 		recolor(); 
 	}
-	
+
 	public void useSkill(Character nupjook,Skill skill) {
 		
-		String firstLine = nupjook.name+"Ïùò "+skill.getName()+"!";
-		typing(firstLine);
+		String firstLine = nupjook.name+"¿« "+skill.getName()+"!";
 		
 		LinkedList<Integer> inputList = skillHitRange(nupjook,skill.code);
 		boolean isHit = false;
 		
+
+		
 		if(nupjook.manaPoint<skill.cost) {
-			typing(firstLine,"\n"+"ÌñâÎèôÎ†•Ïù¥ Î∂ÄÏ°±Ìï¥ Í≥µÍ≤©ÏùÄ Ïã§Ìå®ÌñàÎã§!");
+			typing(firstLine+"\n«‡µø∑¬¿Ã ∫Œ¡∑«ÿ ∞¯∞›¿∫ Ω«∆–«ﬂ¥Ÿ!");
 			checkData();
 			return;
 		} else nupjook.manaPoint-=skill.cost;
@@ -897,17 +1083,21 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		
 		while(!inputList.isEmpty()) {
 			int head = inputList.removeFirst();
-			slot[head].twinkle();
+			if(nupjook.p == 1)
+				slot[head].twinkle1();
+			if(nupjook.p == 2)
+				slot[head].twinkle2();
+			
 			if(nupjook == nupJook2 && MyFrame.nupJook1.location.index == head) {
 				isHit = true;
-				if(nupJook1.shield && skill.damage>3) {
-					nupJook1.healthPoint-=(skill.damage-3);
-					typing(firstLine,"\n"+nupJook1.name+"Îäî Î∞©Ïñ¥Î°ú Î∞õÎäî Îç∞ÎØ∏ÏßÄÍ∞Ä Ï§ÑÏñ¥Îì†Îã§!");
+				if(nupJook1.shield && skill.damage>2) {
+					nupJook1.healthPoint-=(skill.damage-2);
+					typing(firstLine+"\n"+nupJook1.name+"¥¬ πÊæÓ∑Œ πﬁ¥¬ µ•πÃ¡ˆ∞° ¡ŸæÓµÁ¥Ÿ!");
 					checkData();
 					return;
 				}
-				else if(nupJook1.shield && skill.damage<3) {
-					typing(firstLine,"\n"+nupJook1.name+"Îäî Î∞©Ïñ¥ÌñàÎã§!");
+				else if(nupJook1.shield && skill.damage<=2) {
+					typing(firstLine+"\n"+nupJook1.name+"¥¬ πÊæÓ«ﬂ¥Ÿ!");
 					checkData();
 					return;
 				}
@@ -915,14 +1105,14 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			}
 			if(nupjook == nupJook1 && MyFrame.nupJook2.location.index == head) { 
 				isHit = true;
-				if(nupJook2.shield && skill.damage>3) {
+				if(nupJook2.shield && skill.damage>2) {
 					nupJook2.healthPoint-=(skill.damage-3);
-					typing(firstLine,"\n"+nupJook2.name+"Îäî Î∞©Ïñ¥Î°ú Î∞õÎäî Îç∞ÎØ∏ÏßÄÍ∞Ä Ï§ÑÏñ¥Îì†Îã§!");
+					typing(firstLine+"\n"+nupJook2.name+"¥¬ πÊæÓ∑Œ πﬁ¥¬ µ•πÃ¡ˆ∞° ¡ŸæÓµÁ¥Ÿ!");
 					checkData();
 					return;
 				}
-				else if(nupJook2.shield && skill.damage<3) {
-					typing(firstLine,"\n"+nupJook2.name+"Îäî Î∞©Ïñ¥ÌñàÎã§!");
+				else if(nupJook2.shield && skill.damage<=2) {
+					typing(firstLine+"\n"+nupJook2.name+"¥¬ πÊæÓ«ﬂ¥Ÿ!");
 					checkData();
 					return;
 				}
@@ -931,25 +1121,24 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		}
 		checkData();
 		
-		if(isHit) typing(firstLine,"\n"+"Ìö®Í≥ºÎäî ÍµâÏû•ÌñàÎã§!");
-		else if(skill==skilllllll) typing(firstLine,"\n"+"ÎÑôÏ£ΩÏù¥Îäî ÌäÄÏñ¥Ïò¨ÎûêÎã§!");
-		else if(skill==skillo) typing(firstLine,"\n"+nupjook.name+"Ïùò ÌñâÎèôÎ†•Ïù¥ 3 ÌöåÎ≥µÎêòÏóàÎã§!");
-		else typing(firstLine,"\n"+"Í≥µÍ≤©ÏùÄ ÎπóÎÇòÍ∞îÎã§!");
-	
+		if(isHit) typing(firstLine+"\n»ø∞˙¥¬ ±≤¿Â«ﬂ¥Ÿ!");
+		else if(skill==skilllllll) typing(firstLine+"\n≥“¡◊¿Ã¥¬ ∆¢æÓø√∂˙¥Ÿ!");
+		else if(skill==skillo) typing(firstLine+"\n"+nupjook.name+"¿« «‡µø∑¬¿Ã 3 »∏∫πµ«æ˙¥Ÿ!");
+		else typing(firstLine+"\n∞¯∞›¿∫ ∫¯≥™∞¨¥Ÿ!");
 	}
 	
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		//char c = arg0.getKeyChar();
-		//txt.setText(""+c);
-		//System.out.println(""+c);
+		char c = arg0.getKeyChar();
+//		txt.setText(""+c);
+		System.out.println(""+c);
 		
 		switch(arg0.getKeyChar()) {
-			case 'w': useMove(nupJook1,"ÏúÑÎ°ú!"); break;
-			case 's': useMove(nupJook1,"ÏïÑÎûòÎ°ú!"); break;
-			case 'a': useMove(nupJook1,"ÏôºÏ™ΩÏúºÎ°ú!"); break;
-			case 'd': useMove(nupJook1,"Ïò§Î•∏Ï™ΩÏúºÎ°ú!"); break;
+			case 'w': if(nupJook1.location.x > 0)useMove(nupJook1,"¿ß∑Œ!"); break;
+			case 's': if(nupJook1.location.x < 2)useMove(nupJook1,"æ∆∑°∑Œ!"); break;
+			case 'a': if(nupJook1.location.y > 0)useMove(nupJook1,"øﬁ¬ ¿∏∑Œ!"); break;
+			case 'd': if(nupJook1.location.y < 3)useMove(nupJook1,"ø¿∏•¬ ¿∏∑Œ!"); break;
 			
 			case 'r': useSkill(nupJook1,nupJook1.skillSet[0]); break;
 			case 't': useSkill(nupJook1,nupJook1.skillSet[1]); break;
@@ -967,8 +1156,8 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			
 			case 'x': useSkill(nupJook1,skillo); break;
 			case 'o': useSkill(nupJook2,skillo); break;
-			case 'c': nupJook1.shield=true; typing(nupJook1.name+"Îäî Î∞©Ïñ¥ ÌÉúÏÑ∏Ïóê Îì§Ïñ¥Í∞îÎã§!"); checkShield(); break;
-			case 'i': nupJook2.shield=true; typing(nupJook2.name+"Îäî Î∞©Ïñ¥ ÌÉúÏÑ∏Ïóê Îì§Ïñ¥Í∞îÎã§!"); checkShield(); break;
+			case 'c': nupJook1.shield=true; typing(nupJook1.name+"¥¬ πÊæÓ ≈¬ººø° µÈæÓ∞¨¥Ÿ!"); checkShield(); break;
+			case 'i': nupJook2.shield=true; typing(nupJook2.name+"¥¬ πÊæÓ ≈¬ººø° µÈæÓ∞¨¥Ÿ!"); checkShield(); break;
 			case 'p': nupJook1.shield=false; nupJook2.shield=false; checkShield(); break;
 			
 			case 'Y': nupJook1.healthPoint++; checkData(); break;
@@ -981,10 +1170,11 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			case 'L': nupJook2.manaPoint--; checkData(); break;
 		}
 		switch(arg0.getKeyCode()) {
-			case KeyEvent.VK_UP: useMove(nupJook2,"ÏúÑÎ°ú!"); break;
-			case KeyEvent.VK_DOWN: useMove(nupJook2,"ÏïÑÎûòÎ°ú!"); break;
-			case KeyEvent.VK_LEFT: useMove(nupJook2,"ÏôºÏ™ΩÏúºÎ°ú!"); break;
-			case KeyEvent.VK_RIGHT: useMove(nupJook2,"Ïò§Î•∏Ï™ΩÏúºÎ°ú!"); break;
+		
+			case KeyEvent.VK_UP: if(nupJook2.location.x > 0)useMove(nupJook2,"¿ß∑Œ!"); break;
+			case KeyEvent.VK_DOWN: if(nupJook2.location.x < 2)useMove(nupJook2,"æ∆∑°∑Œ!"); break;
+			case KeyEvent.VK_LEFT: if(nupJook2.location.y > 0)useMove(nupJook2,"øﬁ¬ ¿∏∑Œ!"); break;
+			case KeyEvent.VK_RIGHT: if(nupJook2.location.y < 3)useMove(nupJook2,"ø¿∏•¬ ¿∏∑Œ!"); break;
 		
 			case KeyEvent.VK_SPACE: try {
 				System.out.println("start");	
@@ -1050,7 +1240,7 @@ class InputFrame extends JFrame{
 	JPanel[] leftActionPanel = new JPanel[3];
 	JPanel[] rightActionPanel = new JPanel[3];
 	
-	JButton confirmBtn = new JButton("ÏûÖÎ†• ÏôÑÎ£å!");
+	JButton confirmBtn = new JButton("¿‘∑¬ øœ∑·!");
 	
 	JLabel[] leftLabel = new JLabel[3];
 	JLabel[] rightLabel = new JLabel[3];
@@ -1094,10 +1284,10 @@ class InputFrame extends JFrame{
 		mainPanel.setLayout(new GridLayout(1,2,5,5));
 		mainPanel.add(leftPanel);
 		leftPanel.setLayout(new GridLayout(3,1,5,5));
-		leftPanel.setBorder(new TitledBorder(new EtchedBorder(),"ÏôºÏ™Ω ÎÑôÏ£ΩÏù¥"));
+		leftPanel.setBorder(new TitledBorder(new EtchedBorder(),"øﬁ¬  ≥“¡◊¿Ã"));
 		mainPanel.add(rightPanel);
 		rightPanel.setLayout(new GridLayout(3,1,5,5));
-		rightPanel.setBorder(new TitledBorder(new EtchedBorder(),"Ïò§Î•∏Ï™Ω ÎÑôÏ£ΩÏù¥"));
+		rightPanel.setBorder(new TitledBorder(new EtchedBorder(),"ø¿∏•¬  ≥“¡◊¿Ã"));
 		
 		for(int i=0;i<3;i++) {
 			leftActionPanel[i] = new JPanel();
@@ -1106,8 +1296,8 @@ class InputFrame extends JFrame{
 			leftPanel.add(leftActionPanel[i]);
 			rightPanel.add(rightActionPanel[i]);
 			
-			leftLabel[i] = new JLabel("ÌñâÎèô "+i);
-			rightLabel[i] = new JLabel("ÌñâÎèô"+i);
+			leftLabel[i] = new JLabel("«‡µø "+i);
+			rightLabel[i] = new JLabel("«‡µø"+i);
 			
 			leftActionPanel[i].add(leftLabel[i]);
 			rightActionPanel[i].add(rightLabel[i]);
@@ -1118,32 +1308,32 @@ class InputFrame extends JFrame{
 			leftActionPanel[i].add(leftComboBox[i]);
 			rightActionPanel[i].add(rightComboBox[i]);
 			
-			leftComboBox[i].addItem("ÏôºÏ™ΩÏúºÎ°ú!");
-			leftComboBox[i].addItem("Ïò§Î•∏Ï™ΩÏúºÎ°ú!");
-			leftComboBox[i].addItem("ÏïÑÎûòÎ°ú!");
-			leftComboBox[i].addItem("ÏúÑÎ°ú!");
-			leftComboBox[i].addItem("ÎèÑÌïë!");
-			leftComboBox[i].addItem("Î∞©Ïñ¥!");
+			leftComboBox[i].addItem("øﬁ¬ ¿∏∑Œ!");
+			leftComboBox[i].addItem("ø¿∏•¬ ¿∏∑Œ!");
+			leftComboBox[i].addItem("æ∆∑°∑Œ!");
+			leftComboBox[i].addItem("¿ß∑Œ!");
+			leftComboBox[i].addItem("µµ«Œ!");
+			leftComboBox[i].addItem("πÊæÓ!");
 			
-			rightComboBox[i].addItem("ÏôºÏ™ΩÏúºÎ°ú!");
-			rightComboBox[i].addItem("Ïò§Î•∏Ï™ΩÏúºÎ°ú!");
-			rightComboBox[i].addItem("ÏïÑÎûòÎ°ú!");
-			rightComboBox[i].addItem("ÏúÑÎ°ú!");
-			rightComboBox[i].addItem("ÎèÑÌïë!");
-			rightComboBox[i].addItem("Î∞©Ïñ¥!");
+			rightComboBox[i].addItem("øﬁ¬ ¿∏∑Œ!");
+			rightComboBox[i].addItem("ø¿∏•¬ ¿∏∑Œ!");
+			rightComboBox[i].addItem("æ∆∑°∑Œ!");
+			rightComboBox[i].addItem("¿ß∑Œ!");
+			rightComboBox[i].addItem("µµ«Œ!");
+			rightComboBox[i].addItem("πÊæÓ!");
 			
 			for(int j=0;j<6;j++) {
 				Skill getSkill1 = MyFrame.nupJook1.skillSet[j];
-				if(getSkill1.name!="ÌäÄÏñ¥Ïò§Î•¥Í∏∞") leftComboBox[i].addItem(getSkill1.name);
+				if(getSkill1.name!="∆¢æÓø¿∏£±‚") leftComboBox[i].addItem(getSkill1.name);
 				
 				Skill getSkill2 = MyFrame.nupJook2.skillSet[j];
-				if(getSkill2.name!="ÌäÄÏñ¥Ïò§Î•¥Í∏∞") rightComboBox[i].addItem(getSkill2.name);
+				if(getSkill2.name!="∆¢æÓø¿∏£±‚") rightComboBox[i].addItem(getSkill2.name);
 			}
 			
 		}
 		
-		setSize(600,300);
-		setLocation(1000,420);
+		setSize(450,300);
+		setLocation(400,120);
 		setVisible(true);
 	}
 }
@@ -1166,7 +1356,7 @@ public class InuyashaProjectTest {
 		//
 		
 		
-		//MyFrame f = new MyFrame();
+//		MyFrame f = new MyFrame();
 		subFrame f = new subFrame();
 		//InputFrame f =new InputFrame();
 		
