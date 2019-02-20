@@ -28,7 +28,7 @@ class Slot extends JLabel{
 	Timer timer1 = new Timer(250, new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 			switch(count1) {
-				case -1: setVisible(true);
+				case -1: setVisible(true); break;
 				case 0 : setBackground(new Color(205,92,92)); break;
 				case 1 : setBackground(new Color(255,142,142)); break;
 				case 2 : setBackground(new Color(205,92,92)); break;
@@ -39,6 +39,7 @@ class Slot extends JLabel{
 	        if (count1 == 4) {
 	        	count1 = -1;
 	        	setVisible(false);
+	        	
 	        	timer1.stop();
 	        }
 	    }    
@@ -48,7 +49,7 @@ class Slot extends JLabel{
 	Timer timer2 = new Timer(250, new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 			switch(count2) {
-			case -1: setVisible(true);
+				case -1: setVisible(true); break;
 				case 0 : setBackground(new Color(100,149,237)); break;
 				case 1 : setBackground(new Color(150,199,255)); break;
 				case 2 : setBackground(new Color(100,149,237)); break;
@@ -584,10 +585,10 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		//playerPanel
 		playerPanel1.setLayout(new BorderLayout());
 		playerPanel1.setBackground(new Color(0,0,0,0));
-		playerPanel1.add(playLabel1);
+		playerPanel1.add(playLabel1,0);
 		playerPanel2.setLayout(new BorderLayout());
 		playerPanel2.setBackground(new Color(0,0,0,0));
-		playerPanel2.add(playLabel2);
+		playerPanel2.add(playLabel2,0);
 		
 		
 		//boxPanel
@@ -604,14 +605,14 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 
 		classPanel1.setLayout(new BorderLayout());
 		classPanel1.setBackground(new Color(0,0,0,0));
-		classPanel1.add(class1);
+		classPanel1.add(class1,0);
 		class1.setFont(new Font("나눔스퀘어라운드",Font.BOLD,30));
 		class1.setOpaque(false);
 		
 
 		classPanel2.setLayout(new BorderLayout());
 		classPanel2.setBackground(new Color(0,0,0,0));
-		classPanel2.add(class2);
+		classPanel2.add(class2,0);
 		class2.setFont(new Font("나눔스퀘어라운드",Font.BOLD,30));
 		class2.setOpaque(false);
 		//statusPanel
@@ -620,13 +621,13 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		//playerClassPanel
 		playerClassPanel1.setLayout(new BorderLayout());
 		playerClassPanel1.setBackground(new Color(0,0,0,0));
-		playerClassPanel1.add(playerClass1);
+		playerClassPanel1.add(playerClass1,0);
 		playerClass1.setFont(new Font("나눔스퀘어라운드",Font.BOLD,23));
 		playerClass1.setOpaque(false);
 		
 		playerClassPanel2.setLayout(new BorderLayout());
 		playerClassPanel2.setBackground(new Color(0,0,0,0));
-		playerClassPanel2.add(playerClass2);
+		playerClassPanel2.add(playerClass2,0);
 		playerClass2.setFont(new Font("나눔스퀘어라운드",Font.BOLD,23));
 		playerClass2.setOpaque(false);
 		
@@ -718,6 +719,12 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			slot2[i].setBorder(new LineBorder(Color.BLACK,5,false));
 			boardPanel2.add(slot2[i]);
 		}
+		/*
+		for(int i=0;i<12;i++) {
+			boardPanel.setComponentZOrder(slot[i],1);
+			boardPanel.setComponentZOrder(slot2[i],1);
+		}
+		*/
 
 		recolor();
 		
@@ -747,7 +754,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+				System.out.println("start");
 				continueTurn();
 				
 			}
@@ -791,7 +798,52 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		
 		txt.setText("다음 행동을 입력하세요!"+"\n"+">");
 	}
-	
+	/*
+	public void twinkle(Slot slot) {
+		
+		Timer timer1 = new Timer(250, new ActionListener() {
+			int count1 = -1 ;
+		    public void actionPerformed(ActionEvent evt) {
+				switch(count1) {
+					case -1: setVisible(true); break;
+					case 0 : setBackground(new Color(205,92,92)); break;
+					case 1 : setBackground(new Color(255,142,142)); break;
+					case 2 : setBackground(new Color(205,92,92)); break;
+					case 3 : setBackground(new Color(255,142,142)); break;
+				}
+				count1++;
+
+		        if (count1 == 4) {
+		        	count1 = -1;
+		        	setVisible(false);
+		        	
+		        	timer1.stop();
+		        }
+		    }    
+		});
+
+		int count2 = -1 ;
+		Timer timer2 = new Timer(250, new ActionListener() {
+		    public void actionPerformed(ActionEvent evt) {
+				switch(count2) {
+					case -1: setVisible(true); break;
+					case 0 : setBackground(new Color(100,149,237)); break;
+					case 1 : setBackground(new Color(150,199,255)); break;
+					case 2 : setBackground(new Color(100,149,237)); break;
+					case 3 : setBackground(new Color(150,199,255)); break;
+				}
+				count2++;
+
+		        if (count2 == 4) {
+		        	count2 = -1;
+		        	setVisible(false);
+		        	timer2.stop();
+		        }
+		    }    
+		});
+
+	}
+*/	
 	public void playSound(String str) {
 	    try {
 	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(this.getClass().getResource(str));
@@ -829,6 +881,8 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 	
 	public void recolor() {
 		for(int i=0;i<12;i++) {
+
+			slot[i].setVisible(false);
 			slot2[i].setBackground(new Color(245,222,178));
 			slot2[i].setBorder(new LineBorder(Color.BLACK,5,false));
 		}
@@ -839,6 +893,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		int b2 = 250+91*(nupJook2.location.index/4);
 		int c = 100;
 		int d = 100;
+		
 		/*slot[nupJook1.location.index].setBackground(new Color(255,200,200));
 		slot[nupJook1.location.index].setBorder(new LineBorder(Color.RED,5,false));
 		slot[nupJook2.location.index].setBackground(new Color(200,200,255));
@@ -848,7 +903,6 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			slot[nupJook1.location.index].setBackground(new Color(216,191,216));
 		}*/
 		
-
 		slot2[nupJook1.location.index].setBackground(new Color(255,200,200));
 		slot2[nupJook1.location.index].setBorder(new LineBorder(Color.RED,5,false));
 		slot2[nupJook2.location.index].setBackground(new Color(200,200,255));
@@ -857,14 +911,20 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			slot2[nupJook1.location.index].setBorder(new LineBorder(new Color(75,0,130),5,false));
 			slot2[nupJook1.location.index].setBackground(new Color(216,191,216));
 		}
+		
+		//background.setComponentZOrder(boardPanel,1);
+		//background.setComponentZOrder(boardPanel2,1);
+		
 		playerPanel1.setBounds(a1,b1,c,d);
 		playerPanel2.setBounds(a2,b2,c,d);
 		playerClassPanel1.setBounds(a1,b1,c,d);
 		playerClassPanel2.setBounds(a2,b2,c,d);
-		background.add(playerPanel1,0);
-		background.add(playerPanel2,0);
+		
+		
 		background.add(playerClassPanel1,0);
 		background.add(playerClassPanel2,0);
+		background.add(playerPanel1,0);
+		background.add(playerPanel2,0);
 	}
 	
 	public void checkData() {
@@ -910,6 +970,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			}
 		}
 		
+		System.out.println(output.toString());
 		return output;
 	}
 	String str = "";
@@ -945,7 +1006,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		str = stri;
 		if(!typer1.isRunning())
 			typer1.start();
-		txt.setText(stri);
+		//txt.setText(stri);
 	}
 	
 	public void typing(String lin,String stri) {
@@ -953,7 +1014,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		line = lin;
 		if(!typer2.isRunning())
 			typer2.start();
-		txt.setText(line+str);
+		//txt.setText(line+str);
 	}
 	public int skillNametoType(String name) {
 		
@@ -1023,7 +1084,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 				if(count<6) {	
 					
 				playSound("Beep.wav");
-				System.out.println("beep");
+				//System.out.println("beep");
 				System.out.println(count);
 				System.out.println(count+": "+who[count].name+"의 "+act[count]+"!");
 				useSth(who[count],act[count]);
@@ -1083,6 +1144,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		
 		while(!inputList.isEmpty()) {
 			int head = inputList.removeFirst();
+			
 			if(nupjook.p == 1)
 				slot[head].twinkle1();
 			if(nupjook.p == 2)
@@ -1133,7 +1195,7 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 		char c = arg0.getKeyChar();
 //		txt.setText(""+c);
 		System.out.println(""+c);
-		
+		/*
 		switch(arg0.getKeyChar()) {
 			case 'w': if(nupJook1.location.x > 0)useMove(nupJook1,"위로!"); break;
 			case 's': if(nupJook1.location.x < 2)useMove(nupJook1,"아래로!"); break;
@@ -1168,14 +1230,14 @@ class MyFrame extends JFrame implements KeyListener,MouseListener{
 			case 'K': nupJook2.healthPoint--; checkData(); break;
 			case 'O': nupJook2.manaPoint++; checkData(); break;
 			case 'L': nupJook2.manaPoint--; checkData(); break;
-		}
+		}*/
 		switch(arg0.getKeyCode()) {
-		
+		/*
 			case KeyEvent.VK_UP: if(nupJook2.location.x > 0)useMove(nupJook2,"위로!"); break;
 			case KeyEvent.VK_DOWN: if(nupJook2.location.x < 2)useMove(nupJook2,"아래로!"); break;
 			case KeyEvent.VK_LEFT: if(nupJook2.location.y > 0)useMove(nupJook2,"왼쪽으로!"); break;
 			case KeyEvent.VK_RIGHT: if(nupJook2.location.y < 3)useMove(nupJook2,"오른쪽으로!"); break;
-		
+		*/
 			case KeyEvent.VK_SPACE: try {
 				System.out.println("start");	
 				continueTurn();
